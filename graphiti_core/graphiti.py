@@ -17,6 +17,7 @@ limitations under the License.
 import logging
 from datetime import datetime
 from time import time
+from typing import Any
 
 from dotenv import load_dotenv
 from neo4j import AsyncGraphDatabase
@@ -45,6 +46,7 @@ from graphiti_core.search.search_utils import (
     get_mentioned_nodes,
     get_relevant_edges,
 )
+from graphiti_core.storage import KuzuDriverAdapter
 from graphiti_core.utils.bulk_utils import (
     RawEpisode,
     add_nodes_and_edges_bulk,
@@ -102,42 +104,16 @@ class Graphiti:
         store_raw_episode_content: bool = True,
     ):
         """
-        Initialize a Graphiti instance.
-
-        This constructor sets up a connection to the Neo4j database and initializes
-        the LLM client for natural language processing tasks.
-
-        Parameters
-        ----------
-        uri : str
-            The URI of the Neo4j database.
-        user : str
-            The username for authenticating with the Neo4j database.
-        password : str
-            The password for authenticating with the Neo4j database.
-        llm_client : LLMClient | None, optional
-            An instance of LLMClient for natural language processing tasks.
-            If not provided, a default OpenAIClient will be initialized.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        This method establishes a connection to the Neo4j database using the provided
-        credentials. It also sets up the LLM client, either using the provided client
-        or by creating a default OpenAIClient.
-
-        The default database name is set to 'neo4j'. If a different database name
-        is required, it should be specified in the URI or set separately after
-        initialization.
-
-        The OpenAI API key is expected to be set in the environment variables.
-        Make sure to set the OPENAI_API_KEY environment variable before initializing
-        Graphiti if you're using the default OpenAIClient.
+        Initializes a Graphiti instance with database and NLP service connections.
+        
+        Establishes a connection to either a Neo4j or Kuzu database based on the URI scheme, and sets up clients for language modeling, embedding, and cross-encoder services. If custom clients are not provided, defaults are used. Optionally configures whether to store raw episode content.
         """
-        self.driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
+        self.driver: Any
+        if uri.startswith('kuzu://'):
+            db_path = uri[len('kuzu://') :]
+            self.driver = KuzuDriverAdapter(db_path)
+        else:
+            self.driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
         self.database = DEFAULT_DATABASE
         self.store_raw_episode_content = store_raw_episode_content
         if llm_client:

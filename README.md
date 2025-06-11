@@ -298,6 +298,22 @@ graphiti = Graphiti(
 # Now you can use Graphiti with Google Gemini
 ```
 
+## Using Graphiti with Kùzu
+
+Graphiti can also run on the [Kùzu](https://kuzudb.com) graph database. Use a
+`kuzu://` URI that points to your database directory when creating the
+`Graphiti` instance.
+
+```python
+from graphiti_core import Graphiti
+
+graphiti = Graphiti(
+    "kuzu:///path/to/db",
+    "",  # username not required
+    "",  # password not required
+)
+```
+
 ## Documentation
 
 - [Guides and API documentation](https://help.getzep.com/graphiti).

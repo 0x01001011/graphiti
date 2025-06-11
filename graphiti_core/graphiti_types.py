@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Any
+
 from neo4j import AsyncDriver
 from pydantic import BaseModel, ConfigDict
 
@@ -23,7 +25,7 @@ from graphiti_core.llm_client import LLMClient
 
 
 class GraphitiClients(BaseModel):
-    driver: AsyncDriver
+    driver: Any | AsyncDriver
     llm_client: LLMClient
     embedder: EmbedderClient
     cross_encoder: CrossEncoderClient
