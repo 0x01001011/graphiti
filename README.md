@@ -292,9 +292,16 @@ graphiti = Graphiti(
 
 ## Using Graphiti with Kùzu
 
-Graphiti can also run on the [Kùzu](https://kuzudb.com) graph database. Use a
-`kuzu://` URI that points to your database directory when creating the
-`Graphiti` instance.
+Graphiti can also run on the [Kùzu](https://kuzudb.com) graph database. Install
+the optional driver with:
+
+```bash
+pip install kuzu
+```
+
+Use a `kuzu://` URI that points to your database directory when creating the
+`Graphiti` instance. The triple slash (`kuzu:///`) signifies a local directory
+path.
 
 ```python
 from graphiti_core import Graphiti

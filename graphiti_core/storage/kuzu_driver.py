@@ -10,9 +10,13 @@ class KuzuDriverAdapter:
     """Simple adapter to mimic neo4j.AsyncDriver.execute_query using Kùzu."""
 
     def __init__(self, db_path: str):
-        """
-        Initializes a KuzuDriverAdapter with an asynchronous connection to a Kùzu database.
-        
+        if hasattr(result, '__aiter__'):
+            async for row in result:
+                rows.append(dict(zip(cols, row, strict=False)))
+        else:  # fallback for older versions
+            while result.has_next():
+                row = result.get_next()
+                rows.append(dict(zip(cols, row, strict=False)))
         Args:
             db_path: Path to the Kùzu database file.
         

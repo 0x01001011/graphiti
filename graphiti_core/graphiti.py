@@ -104,15 +104,19 @@ class Graphiti:
         store_raw_episode_content: bool = True,
     ):
         """
-        Initializes a Graphiti instance with database and NLP service connections.
-        
-        Establishes a connection to either a Neo4j or Kuzu database based on the URI scheme, and sets up clients for language modeling, embedding, and cross-encoder services. If custom clients are not provided, defaults are used. Optionally configures whether to store raw episode content.
-        """
-        self.driver: Any
-        if uri.startswith('kuzu://'):
-            db_path = uri[len('kuzu://') :]
-            self.driver = KuzuDriverAdapter(db_path)
-        else:
+        This constructor sets up a connection to the configured graph database and
+        initializes the LLM client for natural language processing tasks.
+            The URI of the graph database.
+            The username for authenticating with the database.
+            The password for authenticating with the database.
+        This method establishes a connection to the configured graph database using
+        the provided credentials. It also sets up the LLM client, either using the
+        provided client or by creating a default OpenAIClient.
+            db_path = uri.removeprefix('kuzu://').lstrip('/')
+            if not db_path:
+                raise ValueError(
+                    'Kùzu URI must include a database directory, e.g. kuzu:///path/to/db'
+                )
             self.driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
         self.database = DEFAULT_DATABASE
         self.store_raw_episode_content = store_raw_episode_content

@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Protocol
 
 from neo4j import AsyncDriver
 from pydantic import BaseModel, ConfigDict
@@ -23,9 +25,17 @@ from graphiti_core.cross_encoder import CrossEncoderClient
 from graphiti_core.embedder import EmbedderClient
 from graphiti_core.llm_client import LLMClient
 
+if TYPE_CHECKING:  # pragma: no cover - import only for type checking
+    from graphiti_core.storage import KuzuDriverAdapter
+
+
+class _DriverProtocol(Protocol):
+    async def execute_query(self, query: str, **parameters: Any): ...
+    async def close(self) -> None: ...
+
 
 class GraphitiClients(BaseModel):
-    driver: Any | AsyncDriver
+    driver: _DriverProtocol | AsyncDriver | KuzuDriverAdapter
     llm_client: LLMClient
     embedder: EmbedderClient
     cross_encoder: CrossEncoderClient
