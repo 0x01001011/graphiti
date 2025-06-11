@@ -17,6 +17,7 @@ limitations under the License.
 import logging
 from datetime import datetime
 from time import time
+from typing import Any
 
 from dotenv import load_dotenv
 from neo4j import AsyncGraphDatabase
@@ -45,6 +46,7 @@ from graphiti_core.search.search_utils import (
     get_mentioned_nodes,
     get_relevant_edges,
 )
+from graphiti_core.storage import KuzuDriverAdapter
 from graphiti_core.utils.bulk_utils import (
     RawEpisode,
     add_nodes_and_edges_bulk,
@@ -137,7 +139,12 @@ class Graphiti:
         Make sure to set the OPENAI_API_KEY environment variable before initializing
         Graphiti if you're using the default OpenAIClient.
         """
-        self.driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
+        self.driver: Any
+        if uri.startswith('kuzu://'):
+            db_path = uri[len('kuzu://') :]
+            self.driver = KuzuDriverAdapter(db_path)
+        else:
+            self.driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
         self.database = DEFAULT_DATABASE
         self.store_raw_episode_content = store_raw_episode_content
         if llm_client:
