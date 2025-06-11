@@ -104,40 +104,9 @@ class Graphiti:
         store_raw_episode_content: bool = True,
     ):
         """
-        Initialize a Graphiti instance.
-
-        This constructor sets up a connection to the Neo4j database and initializes
-        the LLM client for natural language processing tasks.
-
-        Parameters
-        ----------
-        uri : str
-            The URI of the Neo4j database.
-        user : str
-            The username for authenticating with the Neo4j database.
-        password : str
-            The password for authenticating with the Neo4j database.
-        llm_client : LLMClient | None, optional
-            An instance of LLMClient for natural language processing tasks.
-            If not provided, a default OpenAIClient will be initialized.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        This method establishes a connection to the Neo4j database using the provided
-        credentials. It also sets up the LLM client, either using the provided client
-        or by creating a default OpenAIClient.
-
-        The default database name is set to 'neo4j'. If a different database name
-        is required, it should be specified in the URI or set separately after
-        initialization.
-
-        The OpenAI API key is expected to be set in the environment variables.
-        Make sure to set the OPENAI_API_KEY environment variable before initializing
-        Graphiti if you're using the default OpenAIClient.
+        Initializes a Graphiti instance with database and NLP service connections.
+        
+        Establishes a connection to either a Neo4j or Kuzu database based on the URI scheme, and sets up clients for language modeling, embedding, and cross-encoder services. If custom clients are not provided, defaults are used. Optionally configures whether to store raw episode content.
         """
         self.driver: Any
         if uri.startswith('kuzu://'):
